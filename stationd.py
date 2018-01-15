@@ -55,12 +55,13 @@ class StationaryV1Handler:
         ts = datetime.utcnow() - timedelta(seconds=1)
         tstr = ts.strftime('%Y%m%d%H')
         accel_id = '%s:%s' % (tstr, station_id)
-        self.logger.debug('Accel ID: %s at %s:%s', accel_id, ts.minute, ts.second)
+        second_of_hour = (60 * ts.minute) + ts.second
+        self.logger.debug('Accel ID: %s at %d (%d:%d)', accel_id, second_of_hour, ts.minute, ts.second)
 
         existing_accel_doc = accel_coll.find_one({'_id': accel_id}, projection={'_id': 1})
         if not existing_accel_doc:
-            # Preallocate arrays except innermost
-            accels = [[None for sec in range(60)] for min in range(60)]
+            # "Preallocate" arrays except innermost
+            accels = [None for sec in range(60 * 60)]
             accel_coll.insert_one({'_id': accel_id, 'r': 40, 'z': accels, 'n': accels, 'e': accels})
 
         if client_id == 'ECN-4':
@@ -74,9 +75,9 @@ class StationaryV1Handler:
         # Update accel Z/N/E
         # logger.debug('%s a.%d.%d Z = %s', accel_id, ts.minute, ts.second, z_values)
         accel_coll.update_one({'_id': accel_id}, {'$set': {
-            'z.%d.%d' % (ts.minute, ts.second): z_values,
-            'n.%d.%d' % (ts.minute, ts.second): n_values,
-            'e.%d.%d' % (ts.minute, ts.second): e_values,
+            'z.%d' % (second_of_hour): z_values,
+            'n.%d' % (second_of_hour): n_values,
+            'e.%d' % (second_of_hour): e_values,
         }})
         # logger.debug('%s a.%d.%d Z = %s', accel_id, ts.minute, ts.second, z_values)
         # accel_z_coll.update_one({'_id': accel_id}, {'$set': {'a.%d.%d' % (ts.minute, ts.second): z_values}})

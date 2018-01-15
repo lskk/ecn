@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ecn.iml" filepath="$PROJECT_DIR$/.idea/ecn.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../ecnweb/.idea/ecnweb.iml" filepath="$PROJECT_DIR$/../ecnweb/.idea/ecnweb.iml" />
     </modules>
   </component>
 </project>
