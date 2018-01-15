@@ -34,7 +34,7 @@ class MobileHandler:
             sample_idx += msg.sample_rate
             cur_time = cur_time + timedelta(seconds=1)
             next_hour = cur_time.strftime('%Y%m%d%H')
-            if next_hour != cur_time:
+            if next_hour != cur_hour:
                 # Flush this hour first
                 self.__upsert_data(msg.station_id, cur_hour, msg.sample_rate,
                                    accel_z_buf, accel_n_buf, accel_e_buf)
