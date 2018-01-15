@@ -20,7 +20,7 @@ class MobileHandler:
         accel_coll: pymongo.collection.Collection = self.db.accel
         cur_time = datetime.utcfromtimestamp(msg.start_time/1000)
         self.logger.debug('Received %d bytes stream from station %s, start_time=%s, sample_rate=%d Hz',
-                          len(body), msg.station_id, msg, cur_time, msg.sample_rate)
+                          len(body), msg.station_id, cur_time, msg.sample_rate)
 
         cur_hour = cur_time.strftime('%Y%m%d%H')
         accel_z_buf = {}
