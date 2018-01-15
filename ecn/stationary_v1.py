@@ -9,6 +9,7 @@ from ecn import StationKind, PPTIK_GRAVITY, StationState
 
 class StationaryV1Handler:
     logger = logging.getLogger(__name__)
+    SAMPLE_RATE = 40
 
     def __init__(self, db: pymongo.database.Database):
         self.db: pymongo.database.Database = db
@@ -36,7 +37,8 @@ class StationaryV1Handler:
         if not existing_accel_doc:
             # "Preallocate" arrays except innermost
             accels = [None for sec in range(60 * 60)]
-            accel_coll.insert_one({'_id': accel_id, 'r': 40, 'z': accels, 'n': accels, 'e': accels})
+            self.logger.debug('Inserting stationary_v1 accel %s sample_rate=%d', accel_id, self.SAMPLE_RATE)
+            accel_coll.insert_one({'_id': accel_id, 'r': self.SAMPLE_RATE, 'z': accels, 'n': accels, 'e': accels})
 
         if client_id == 'ECN-4':
             z_values = [(orig['y'] + 6.598601 if orig['y'] else None) for orig in msg['accelerations']]

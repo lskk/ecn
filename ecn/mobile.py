@@ -58,7 +58,7 @@ class MobileHandler:
         existing_accel_doc = accel_coll.find_one({'_id': accel_id}, projection={'_id': 1})
         if not existing_accel_doc:
             # "Preallocate" top-level arrays only
-            self.logger.debug('Inserting accel %s sample_rate=%d', accel_id, sample_rate)
+            self.logger.debug('Inserting mobile accel %s sample_rate=%d', accel_id, sample_rate)
             accels = [None for sec in range(60 * 60)]
             accel_coll.insert_one({'_id': accel_id, 'r': sample_rate, 'z': accels, 'n': accels, 'e': accels})
 
