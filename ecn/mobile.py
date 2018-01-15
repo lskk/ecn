@@ -18,9 +18,10 @@ class MobileHandler:
         msg.ParseFromString(body)
         # self.logger.debug('Station: %s', station_id)
         accel_coll: pymongo.collection.Collection = self.db.accel
-        self.logger.debug('Station: %s - Stream: %s', msg.station_id, msg)
-
         cur_time = datetime.utcfromtimestamp(msg.start_time/1000)
+        self.logger.debug('Received %d bytes stream from station %s, start_time=%s, sample_rate=%d Hz',
+                          len(body), msg.station_id, msg, cur_time, msg.sample_rate)
+
         cur_hour = cur_time.strftime('%Y%m%d%H')
         accel_z_buf = {}
         accel_n_buf = {}
@@ -67,7 +68,7 @@ class MobileHandler:
             update_doc['$set']['n.%d' % second_of_hour] = samples
         for second_of_hour, samples in accel_e_buf.items():
             update_doc['$set']['e.%d' % second_of_hour] = samples
-        self.logger.debug('Updating accel %s with: %s', accel_id, update_doc['$set'])
+        self.logger.debug('Updating accel %s with: %s', accel_id, update_doc['$set'].keys())
         accel_coll.update_one({'_id': accel_id}, update_doc)
 
         # mark as 'H'igh rate
