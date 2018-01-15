@@ -21,6 +21,7 @@ Requirements:
 
 Environment variables:
 
+    QUEUE_PREFIX=ecn_dev_
     MONGODB_URI=mongodb://localhost/ecn
     AMQP_HOST=localhost
     AMQP_VHOST=/
@@ -43,3 +44,11 @@ Environment variables:
 4. Edit `setenv.cmd` and ensure configuration (get from Dropbox admin)
 5. Run `setenv.cmd`
 6. Run `python stationd.py`
+
+## Protocol Buffers
+
+The protobuf file **must** be in sync with the file used by GeoAssistant Android client.
+
+Compile protobuf to Python library:
+
+    E:\protobuf\bin\protoc -I=. --python_out=ecn/ ecn_mobile.proto

@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package id.ac.itb.pptik.ecn;
+
+/**
+ * A stream of sensor samples from a mobile station.
+ */
+message MobileStream {
+  /**
+   * Station ID. The JWT payload will become: {"sub": (station_id)}
+   */
+  uint32 station_id = 1;
+  /**
+   * JWT signature (binary encoded). The JWT token becomes
+   * Header: {"alg":"HS256","typ":"JWT"}
+   * Payload: {"sub": (station_id)}
+   * Signature: base64(signature)
+   */
+  bytes signature = 2;
+  /**
+   * Actual start time of the stream (around the start of a second but usually not exactly at
+   * millisecond 0), in milliseconds since UTC epoch.
+   */
+  uint64 start_time = 3;
+  int32 sample_rate = 4;
+  repeated float accel_z = 5;
+  repeated float accel_n = 6;
+  repeated float accel_e = 7;
+}
