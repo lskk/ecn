@@ -47,15 +47,22 @@ class AmqpProcessor:
             lambda channel, reply_code, reply_text:
                 self.logger.info('Channel closed: %s %s %s', channel.channel_number, reply_code, reply_text))
         # Subscribe stationary v1 queue
-        self.logger.info('Consuming queue %s ...', self.QUEUE_STATIONARY_V1)
-        consumer = self.channel.basic_consume(self.consume_stationary_v1, queue=self.QUEUE_STATIONARY_V1, no_ack=False,
-                                   exclusive=True)
-        self.logger.info('Consuming queue %s as %s', self.QUEUE_STATIONARY_V1, consumer)
+        if self.stationary_v1_handler:
+            self.logger.info('Consuming queue %s ...', self.QUEUE_STATIONARY_V1)
+            consumer = self.channel.basic_consume(self.consume_stationary_v1, queue=self.QUEUE_STATIONARY_V1, no_ack=False,
+                                       exclusive=True)
+            self.logger.info('Consuming queue %s as %s', self.QUEUE_STATIONARY_V1, consumer)
+        else:
+            self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_STATIONARY_V1)
+
         # Subscribe mobile stream queue
-        self.logger.info('Consuming queue %s ...', self.QUEUE_MOBILE_STREAM)
-        consumer = self.channel.basic_consume(self.consume_mobile_stream, queue=self.QUEUE_MOBILE_STREAM, no_ack=False,
-                                   exclusive=True)
-        self.logger.info('Consuming queue %s as %s', self.QUEUE_MOBILE_STREAM, consumer)
+        if self.mobile_handler:
+            self.logger.info('Consuming queue %s ...', self.QUEUE_MOBILE_STREAM)
+            consumer = self.channel.basic_consume(self.consume_mobile_stream, queue=self.QUEUE_MOBILE_STREAM, no_ack=False,
+                                       exclusive=True)
+            self.logger.info('Consuming queue %s as %s', self.QUEUE_MOBILE_STREAM, consumer)
+        else:
+            self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_MOBILE_STREAM)
 
     def consume_stationary_v1(self, channel: Channel, method, header, body):
         """Called when we receive a message from RabbitMQ"""
