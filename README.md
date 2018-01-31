@@ -49,6 +49,13 @@ Environment variables:
 6. Run `setenv.cmd`
 7. Run `python stationd.py`
 
+### Autostart Script (Windows Server)
+
+    E:
+    cd \ecn
+    call setenv
+    venv\Scripts\python stationd.py
+
 ## Protocol Buffers
 
 The protobuf file **must** be in sync with the file used by GeoAssistant Android client.
