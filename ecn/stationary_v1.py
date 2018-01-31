@@ -17,7 +17,11 @@ class StationaryV1Handler:
     def receive(self, body: bytearray):
         body = body.replace(b'nan,', b'null,') # Workaround for ECNv1 bug
         # logger.debug('Decoding %s', body)
-        msg = json.loads(body)
+        try:
+            msg = json.loads(body)
+        except Exception as e:
+            self.logger.error('Cannot parse JSON: %s', body, exc_info = e)
+            raise RuntimeError(e)
         client_id = msg['clientID']
         station_coll: pymongo.collection.Collection = self.db.station
         station = station_coll.find_one({'k': StationKind.V1, 'i': client_id}, projection={'_id': 1})
