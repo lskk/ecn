@@ -37,13 +37,17 @@ Environment variables:
 
         python -m venv venv
 
-3. Install dependencies
+3. Activate the virtual environment
+
+        venv\Scripts\activate
+
+4. Install dependencies
 
         pip install -r requirements.txt
 
-4. Edit `setenv.cmd` and ensure configuration (get from Dropbox admin)
-5. Run `setenv.cmd`
-6. Run `python stationd.py`
+5. Edit `setenv.cmd` and ensure configuration (get from Dropbox admin)
+6. Run `setenv.cmd`
+7. Run `python stationd.py`
 
 ## Protocol Buffers
 
