@@ -20,7 +20,7 @@ class StationaryV1Handler:
         try:
             msg = json.loads(body)
         except Exception as e:
-            self.logger.error('Cannot parse JSON: %s', body, exc_info = e)
+            self.logger.error('Cannot parse JSON: %s', str(body), exc_info = e)
             raise RuntimeError(e)
         client_id = msg['clientID']
         station_coll: pymongo.collection.Collection = self.db.station
