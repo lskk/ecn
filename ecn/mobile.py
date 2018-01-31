@@ -36,7 +36,7 @@ class MobileHandler:
             next_hour = cur_time.strftime('%Y%m%d%H')
             if next_hour != cur_hour:
                 # Flush this hour first
-                self.__upsert_data(msg.station_id, cur_hour, msg.sample_rate,
+                self.__upsert_data(msg.station_id, cur_hour, cur_time, msg.sample_rate,
                                    accel_z_buf, accel_n_buf, accel_e_buf)
                 accel_z_buf = {}
                 accel_n_buf = {}
@@ -45,13 +45,13 @@ class MobileHandler:
 
         # Usually we have some data here, so flush it
         if accel_z_buf:
-            self.__upsert_data(msg.station_id, cur_hour, msg.sample_rate,
+            self.__upsert_data(msg.station_id, cur_hour, cur_time, msg.sample_rate,
                                accel_z_buf, accel_n_buf, accel_e_buf)
             accel_z_buf = {}
             accel_n_buf = {}
             accel_e_buf = {}
 
-    def __upsert_data(self, station_id: int, cur_hour: str, sample_rate: int,
+    def __upsert_data(self, station_id: int, cur_hour: str, cur_time: datetime, sample_rate: int,
                       accel_z_buf: [], accel_n_buf: [], accel_e_buf: []):
         accel_coll: pymongo.collection.Collection = self.db.accel
         accel_id = '%s:%s' % (cur_hour, station_id)
@@ -74,4 +74,4 @@ class MobileHandler:
 
         # mark as 'H'igh rate
         station_coll: pymongo.collection.Collection = self.db.station
-        station_coll.update_one({'_id': station_id}, {'$set': {'s': StationState.HIGH_RATE, 't': datetime.utcnow()}})
+        station_coll.update_one({'_id': station_id}, {'$set': {'s': StationState.HIGH_RATE, 't': cur_time}})
