@@ -36,6 +36,13 @@ message TriggerEvent {
   }
   enum NonquakeLabel {
     UNKNOWN = 0;
+    FOOTSTEPS = 1;
+    DROP = 2;
+    ON_HAND = 3;
+    WALKING = 4;
+    RUNNING = 5;
+    JUMPING = 6;
+    MOVING_VEHICLE = 7;
   }
   MotionLabel motionLabel = 9;
   QuakeLabel quakeLabel = 9;
