@@ -45,6 +45,6 @@ message TriggerEvent {
     MOVING_VEHICLE = 7;
   }
   MotionLabel motionLabel = 9;
-  QuakeLabel quakeLabel = 9;
-  NonquakeLabel nonquakeLabel = 9;
+  QuakeLabel quakeLabel = 10;
+  NonquakeLabel nonquakeLabel = 11;
 }
