@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+package id.ac.itb.pptik.quakezone;
+
+/**
+ * A stream of samples from a station configured as continouous (usually fixed stations, but mobile phones can send continouous signals too).
+ */
+message ContinuousStream {
+  /**
+   * Station ID (usually unique UID of the device). The JWT payload will become: {"sub": "(station_id)"}
+   */
+  string station_id = 21;
+  /**
+   * JWT signature ONLY (binary encoded, not base64). The JWT token becomes
+   * Header: {"alg":"HS256","typ":"JWT"}
+   * Payload: {"sub": "(station_id)"}
+   * Signature: base64(binary signature)
+   */
+  bytes signature = 2;
+  /**
+   * Start time of the stream (should be padded to start at millisecond 0 of a second),
+   * in milliseconds since UTC epoch.
+   */
+  uint64 start_time = 3;
+  int32 sampling_rate = 4;
+  repeated float latitude = 8;
+  repeated float longitude = 9;
+  repeated float altitude = 10;
+  repeated float raw_accel_x = 11;
+  repeated float raw_accel_y = 12;
+  repeated float raw_accel_z = 13;
+  repeated float lin_accel_x = 14;
+  repeated float lin_accel_y = 15;
+  repeated float lin_accel_z = 16;
+  repeated float rot_rate_x = 17;
+  repeated float rot_rate_y = 18;
+  repeated float rot_rate_z = 19;
+  repeated float rot_vec_x = 20;
+  repeated float rot_vec_y = 21;
+  repeated float rot_vec_z = 22;
+  repeated float rot_vec_s = 23;
+}

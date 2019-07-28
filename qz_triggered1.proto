@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package id.ac.itb.pptik.quakezone;
+
+/**
+ * An event signal from a station set as triggered (usually mobile phone stations).
+ */
+message TriggerEvent {
+  /**
+   * Station ID (UUID). The JWT payload will become: {"sub": "(station_id)"}
+   */
+  string station_id = 1;
+  /**
+   * JWT signature (binary encoded). The JWT token becomes
+   * Header: {"alg":"HS256","typ":"JWT"}
+   * Payload: {"sub": "(station_id)"}
+   * Signature: base64(signature)
+   */
+  bytes signature = 2;
+  /**
+   * Trigger time, in milliseconds since UTC epoch.
+   */
+  uint64 trigger_time = 3;
+  float latitude = 4;
+  float longitude = 5;
+  float altitude = 6;
+  float peak_lin_accel = 7;
+  float peak_rot_rate = 8;
+  enum MotionLabel {
+    NOISE = 0;
+    MOTION = 1;
+  }
+  enum QuakeLabel {
+    NONQUAKE = 0;
+    QUAKE = 1;
+  }
+  enum NonquakeLabel {
+    UNKNOWN = 0;
+  }
+  MotionLabel motionLabel = 9;
+  QuakeLabel quakeLabel = 9;
+  NonquakeLabel nonquakeLabel = 9;
+}
