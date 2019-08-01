@@ -39,20 +39,20 @@ class AmqpProcessor:
     def on_connected(self, connection: pika.BaseConnection):
         """Called when we are fully connected to RabbitMQ"""
         self.logger.info('Connected to RabbitMQ')
-        connection.channel(self.on_channel_open)
+        connection.channel(on_open_callback=self.on_channel_open)
 
     def on_channel_open(self, new_channel: Channel):
         """Called when our channel has opened"""
         self.channel = new_channel
         self.logger.info('Channel opened: %s', self.channel)
         self.channel.add_on_close_callback(
-            lambda channel, reply_code, reply_text:
-                self.logger.info('Channel closed: %s %s %s', channel.channel_number, reply_code, reply_text))
+            lambda channel, reason:
+                self.logger.info('Channel closed: %s %s', channel.channel_number, reason))
         # Subscribe stationary v1 queue
         if self.stationary_v1_handler:
             self.logger.info('Consuming queue %s ...', self.QUEUE_STATIONARY_V1)
-            consumer = self.channel.basic_consume(self.consume_stationary_v1, queue=self.QUEUE_STATIONARY_V1, no_ack=False,
-                                       exclusive=True)
+            consumer = self.channel.basic_consume(queue=self.QUEUE_STATIONARY_V1, on_message_callback=self.consume_stationary_v1,
+                                                    exclusive=True)
             self.logger.info('Consuming queue %s as %s', self.QUEUE_STATIONARY_V1, consumer)
         else:
             self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_STATIONARY_V1)
@@ -60,8 +60,8 @@ class AmqpProcessor:
         # Subscribe mobile stream queue
         if self.mobile_handler:
             self.logger.info('Consuming queue %s ...', self.QUEUE_MOBILE_STREAM)
-            consumer = self.channel.basic_consume(self.consume_mobile_stream, queue=self.QUEUE_MOBILE_STREAM, no_ack=False,
-                                       exclusive=True)
+            consumer = self.channel.basic_consume(queue=self.QUEUE_MOBILE_STREAM, on_message_callback=self.consume_mobile_stream,
+                                                    exclusive=True)
             self.logger.info('Consuming queue %s as %s', self.QUEUE_MOBILE_STREAM, consumer)
         else:
             self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_MOBILE_STREAM)

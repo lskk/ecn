@@ -3,10 +3,12 @@
 import logging
 import os
 from pymongo import MongoClient
-
+from dotenv import load_dotenv
 from ecn.amqp import AmqpProcessor
 from ecn.mobile import MobileHandler
 from ecn.stationary_v1 import StationaryV1Handler
+
+load_dotenv(verbose=True)
 
 MONGODB_URI = os.environ['MONGODB_URI']
 AMQP_HOST = os.environ['AMQP_HOST']
