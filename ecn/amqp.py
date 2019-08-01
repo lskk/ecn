@@ -22,7 +22,8 @@ class AmqpProcessor:
         params = pika.ConnectionParameters(host=host, virtual_host=vhost,
                                            credentials=pika.PlainCredentials(username, password),
                                            # https://stackoverflow.com/a/16155184/122441
-                                           heartbeat=0)
+                                           # https://pika.readthedocs.io/en/stable/examples/heartbeat_and_blocked_timeouts.html
+                                           heartbeat=600, blocked_connection_timeout=300)
         self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected)
 
     def run(self):
