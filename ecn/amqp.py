@@ -45,7 +45,7 @@ class AmqpProcessor:
             # Gracefully close the connection
             # self.conn.close()
             # Loop until we're fully closed, will stop on its own
-            self.conn.ioloop.start()
+            # self.conn.ioloop.start()
             # Reconnect if not KeyboardInterrupt
             self.logger.info('Reconnecting...')
             time.sleep(1)
