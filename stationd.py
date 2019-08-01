@@ -26,5 +26,6 @@ db = mongo.ecn
 processor = AmqpProcessor()
 processor.stationary_v1_handler = StationaryV1Handler(db)
 processor.mobile_handler = MobileHandler(db)
-processor.connect(AMQP_HOST, AMQP_VHOST, AMQP_USER, AMQP_PASSWORD)
-processor.run()
+#processor.connect(AMQP_HOST, AMQP_VHOST, AMQP_USER, AMQP_PASSWORD)
+#processor.run()
+processor.connect_and_run_forever(AMQP_HOST, AMQP_VHOST, AMQP_USER, AMQP_PASSWORD)

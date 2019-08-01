@@ -26,6 +26,28 @@ class AmqpProcessor:
                                            heartbeat=600, blocked_connection_timeout=300)
         self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected)
 
+    def connect_and_run_forever(self, host: str, vhost: str, username: str, password: str):
+        while True:
+            self.connect(host, vhost, username, password)
+            try:
+                # Loop so we can communicate with RabbitMQ
+                self.conn.ioloop.start()
+            except KeyboardInterrupt:
+                self.logger.info('Interrupted by keyboard, shutting down...')
+                # Gracefully close the connection
+                self.conn.close()
+                # Loop until we're fully closed, will stop on its own
+                self.conn.ioloop.start()
+                break
+
+            # Gracefully close the connection
+            self.conn.close()
+            # Loop until we're fully closed, will stop on its own
+            self.conn.ioloop.start()
+            # Reconnect if not KeyboardInterrupt
+            self.logger.info('Reconnecting...')
+            time.sleep(1)
+
     def run(self):
         try:
             # Loop so we can communicate with RabbitMQ
@@ -36,7 +58,7 @@ class AmqpProcessor:
             self.conn.close()
             # Loop until we're fully closed, will stop on its own
             self.conn.ioloop.start()
-
+        
     def on_connected(self, connection: pika.BaseConnection):
         """Called when we are fully connected to RabbitMQ"""
         self.logger.info('Connected to RabbitMQ')
