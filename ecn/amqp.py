@@ -20,7 +20,9 @@ class AmqpProcessor:
     def connect(self, host: str, vhost: str, username: str, password: str):
         self.logger.info('Connecting to RabbitMQ %s@%s:%s ...', username, host, vhost)
         params = pika.ConnectionParameters(host=host, virtual_host=vhost,
-                                           credentials=pika.PlainCredentials(username, password))
+                                           credentials=pika.PlainCredentials(username, password),
+                                           # https://stackoverflow.com/a/16155184/122441
+                                           heartbeat_interval=0)
         self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected)
 
     def run(self):
