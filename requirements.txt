@@ -1,5 +1,5 @@
-numpy==1.14.0
-pika==0.11.2
-protobuf==3.5.1
-pymongo==3.6.0
-six==1.11.0
+numpy==1.17.0
+pika==1.1.0
+protobuf==3.9.0
+pymongo==3.8.0
+six==1.12.0
