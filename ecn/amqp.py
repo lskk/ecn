@@ -20,11 +20,11 @@ class AmqpProcessor:
 
     def connect(self, host: str, vhost: str, username: str, password: str):
         self.logger.info('Connecting to RabbitMQ %s@%s:%s ...', username, host, vhost)
+        # https://stackoverflow.com/a/16155184/122441
+        # https://pika.readthedocs.io/en/stable/examples/heartbeat_and_blocked_timeouts.html
         params = pika.ConnectionParameters(host=host, virtual_host=vhost,
-                                           credentials=pika.PlainCredentials(username, password),
-                                           # https://stackoverflow.com/a/16155184/122441
-                                           # https://pika.readthedocs.io/en/stable/examples/heartbeat_and_blocked_timeouts.html
-                                           heartbeat=600, blocked_connection_timeout=300)
+                                           credentials=pika.PlainCredentials(username, password))
+                                        #    heartbeat=600, blocked_connection_timeout=300)
         self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected,
             on_close_callback=self.on_channel_closed)
 
@@ -43,7 +43,7 @@ class AmqpProcessor:
                 break
 
             # Gracefully close the connection
-            self.conn.close()
+            # self.conn.close()
             # Loop until we're fully closed, will stop on its own
             self.conn.ioloop.start()
             # Reconnect if not KeyboardInterrupt
@@ -93,7 +93,6 @@ class AmqpProcessor:
 
     def on_channel_closed(self, channel: Channel, reason):
         self.logger.warning('AMQP channel closed: %s', reason)
-        self.conn.close()
 
     def consume_stationary_v1(self, channel: Channel, method, header, body):
         """Called when we receive a message from RabbitMQ"""
