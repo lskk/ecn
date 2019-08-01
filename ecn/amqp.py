@@ -3,6 +3,7 @@ import logging
 import os
 import pika
 from pika.channel import Channel
+import time
 
 
 class AmqpProcessor:
@@ -24,7 +25,8 @@ class AmqpProcessor:
                                            # https://stackoverflow.com/a/16155184/122441
                                            # https://pika.readthedocs.io/en/stable/examples/heartbeat_and_blocked_timeouts.html
                                            heartbeat=600, blocked_connection_timeout=300)
-        self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected)
+        self.conn = pika.SelectConnection(parameters=params, on_open_callback=self.on_connected,
+            on_close_callback=self.on_channel_closed)
 
     def connect_and_run_forever(self, host: str, vhost: str, username: str, password: str):
         while True:
@@ -88,6 +90,10 @@ class AmqpProcessor:
             self.logger.info('Consuming queue %s as %s', self.QUEUE_MOBILE_STREAM, consumer)
         else:
             self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_MOBILE_STREAM)
+
+    def on_channel_closed(self, channel: Channel, reason):
+        self.logger.warning('AMQP channel closed: %s', reason)
+        self.conn.close()
 
     def consume_stationary_v1(self, channel: Channel, method, header, body):
         """Called when we receive a message from RabbitMQ"""
