@@ -7,36 +7,122 @@ package id.ac.itb.pptik.quakezone;
  */
 message ContinuousStream {
   /**
-   * Station ID (usually unique UID of the device). The JWT payload will become: {"sub": "(station_id)"}
+   * Station ID (ObjectId of the station, given by Station API which is from MongoDB),
+   * it is a 24-character hexadecimal string, e.g. "507f1f77bcf86cd799439011".
+   * The JWT payload will become: {"sub": "(station_id)"}
+   * For a fixed station, this is configured from environment variable `STATION_ID`.
    */
-  string station_id = 21;
+  string station_id = 1;
   /**
-   * JWT signature ONLY (binary encoded, not base64). The JWT token becomes
-   * Header: {"alg":"HS256","typ":"JWT"}
-   * Payload: {"sub": "(station_id)"}
-   * Signature: base64(binary signature)
+   * JWT signature ONLY (decoded from base64 as binary), without JWT header and payload.
+   * The signature is given by Station API during station signin.
+   * For a fixed station, this is configured from environment variable `STATION_SIGNATURE`.
+   * The JWT token becomes:
+   *   Header: {"alg":"HS256","typ":"JWT"}
+   *   Payload: {"sub": "(station_id)"}
+   *   Signature: base64(binary signature)
    */
   bytes signature = 2;
   /**
-   * Start time of the stream (should be padded to start at millisecond 0 of a second),
+   * Start time of the stream (should start at exactly millisecond 0 of a second),
    * in milliseconds since UTC epoch.
    */
   uint64 start_time = 3;
-  int32 sampling_rate = 4;
-  repeated float latitude = 8;
-  repeated float longitude = 9;
-  repeated float altitude = 10;
-  repeated float raw_accel_x = 11;
-  repeated float raw_accel_y = 12;
-  repeated float raw_accel_z = 13;
-  repeated float lin_accel_x = 14;
-  repeated float lin_accel_y = 15;
-  repeated float lin_accel_z = 16;
-  repeated float rot_rate_x = 17;
-  repeated float rot_rate_y = 18;
-  repeated float rot_rate_z = 19;
-  repeated float rot_vec_x = 20;
-  repeated float rot_vec_y = 21;
-  repeated float rot_vec_z = 22;
-  repeated float rot_vec_s = 23;
+  /**
+   * Duration of this continouous stream (in seconds), normally this is 1 second.
+   */
+  uint32 duration = 4;
+  /**
+   * Sampling rate of location traces (latitude, longitude, altitude), normally this is 4 Hz.
+   */
+  uint32 location_sampling_rate = 5;
+  /**
+   * Sampling rate of motion traces (totaling 37 channels), normally this is 50 Hz.
+   */
+  uint32 motion_sampling_rate = 6;
+  /**
+   * Latitude traces, in degrees.
+   */
+  repeated float latitude = 7;
+  /**
+   * Longitude traces, in degrees.
+   */
+  repeated float longitude = 8;
+  /**
+   * Altitude traces, in degrees.
+   */
+  repeated float altitude = 9;
+  /**
+   * Gravity acceleration traces, in m/s^2.
+   * These may be empty if the sensor hardware cannot measure gravity acceleration.
+   */
+  repeated float gravity_x = 10;
+  repeated float gravity_y = 11;
+  repeated float gravity_z = 12;
+  /**
+   * Geomagnetic field (calibrated) traces, in μT.
+   */
+  repeated float geomagnetic_x = 13;
+  repeated float geomagnetic_y = 14;
+  repeated float geomagnetic_z = 15;
+  /**
+   * Raw acceleration (including gravity) traces, in m/s^2.
+   * Traces are in device (XYZ) coordinates,
+   * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   */
+  repeated float raw_accel_x = 16;
+  repeated float raw_accel_y = 17;
+  repeated float raw_accel_z = 18;
+  /**
+   * Linear acceleration (excluding gravity) traces, in m/s^2.
+   * These may be empty if the sensor hardware cannot measure gravity acceleration.
+   * Traces are in device (XYZ) coordinates,
+   * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   */
+  repeated float linear_accel_x = 19;
+  repeated float linear_accel_y = 20;
+  repeated float linear_accel_z = 21;
+  /**
+   * Rotation rate (gyroscope) traces, in rad/s.
+   * Traces are in device (XYZ) coordinates,
+   * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   */ 
+  repeated float rotation_rate_x = 22;
+  repeated float rotation_rate_y = 23;
+  repeated float rotation_rate_z = 24;
+  /**
+   * Inclination matrix traces.
+   * These may be empty if the sensor hardware cannot measure rotation matrix/vector.
+   *
+   * Inclination matrix IM is always in this form, so only 4 matrix elements is needed:
+   *
+   * /  1       0       0   0  \
+   * |  0   M[ 5]   M[ 6]   0  |
+   * |  0   M[ 9]   M[10]   0  |
+   * \  0       0       0   1  /
+   */
+  repeated float inclination_matrix_5 = 25;
+  repeated float inclination_matrix_6 = 26;
+  repeated float inclination_matrix_9 = 27;
+  repeated float inclination_matrix_10 = 28;
+  /**
+   * Rotation matrix traces.
+   * These may be empty if the sensor hardware cannot measure rotation matrix/vector.
+   *
+   * Rotation matrix RM is always in this form, so only 9 matrix elements is needed:
+   *
+   * /  M[ 0]   M[ 1]   M[ 2]   0  \
+   * |  M[ 4]   M[ 5]   M[ 6]   0  |
+   * |  M[ 8]   M[ 9]   M[10]   0  |
+   * \      0       0       0   1  /
+   */
+  repeated float rotation_matrix_0 = 29;
+  repeated float rotation_matrix_1 = 30;
+  repeated float rotation_matrix_2 = 31;
+  repeated float rotation_matrix_4 = 32;
+  repeated float rotation_matrix_5 = 33;
+  repeated float rotation_matrix_6 = 34;
+  repeated float rotation_matrix_8 = 35;
+  repeated float rotation_matrix_9 = 36;
+  repeated float rotation_matrix_10 = 37;
 }
