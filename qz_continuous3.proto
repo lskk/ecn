@@ -42,25 +42,36 @@ message ContinuousStream {
   uint32 motion_sampling_rate = 6;
   /**
    * Latitude traces, in degrees.
+   * This array should contain number of elements exactly as in `location_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float latitude = 7;
   /**
    * Longitude traces, in degrees.
+   * This array should contain number of elements exactly as in `location_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float longitude = 8;
   /**
-   * Altitude traces, in degrees.
+   * Altitude traces, in meters above sea level.
+   * It can be empty if hardware sensor cannot provide altitude.
+   * If given, this array should contain number of elements exactly as in `location_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float altitude = 9;
   /**
    * Gravity acceleration traces, in m/s^2.
    * These may be empty if the sensor hardware cannot measure gravity acceleration.
+   * If given, this array should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float gravity_x = 10;
   repeated float gravity_y = 11;
   repeated float gravity_z = 12;
   /**
    * Geomagnetic field (calibrated) traces, in μT.
+   * This array should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float geomagnetic_x = 13;
   repeated float geomagnetic_y = 14;
@@ -69,6 +80,8 @@ message ContinuousStream {
    * Raw acceleration (including gravity) traces, in m/s^2.
    * Traces are in device (XYZ) coordinates,
    * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   * This array should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float raw_accel_x = 16;
   repeated float raw_accel_y = 17;
@@ -78,6 +91,8 @@ message ContinuousStream {
    * These may be empty if the sensor hardware cannot measure gravity acceleration.
    * Traces are in device (XYZ) coordinates,
    * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   * If given, this array should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    */
   repeated float linear_accel_x = 19;
   repeated float linear_accel_y = 20;
@@ -86,6 +101,8 @@ message ContinuousStream {
    * Rotation rate (gyroscope) traces, in rad/s.
    * Traces are in device (XYZ) coordinates,
    * Live Signal Recorder worker will rotate to world (ZNE) coordinates if possible before saving to `signalLive` collection.
+   * This array should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    */ 
   repeated float rotation_rate_x = 22;
   repeated float rotation_rate_y = 23;
@@ -93,6 +110,8 @@ message ContinuousStream {
   /**
    * Inclination matrix traces.
    * These may be empty if the sensor hardware cannot measure rotation matrix/vector.
+   * If given, these arrays should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    *
    * Inclination matrix IM is always in this form, so only 4 matrix elements is needed:
    *
@@ -108,6 +127,8 @@ message ContinuousStream {
   /**
    * Rotation matrix traces.
    * These may be empty if the sensor hardware cannot measure rotation matrix/vector.
+   * If given, these arrays should contain number of elements exactly as in `motion_sampling_rate`,
+   * upsampling if necessary.
    *
    * Rotation matrix RM is always in this form, so only 9 matrix elements is needed:
    *
