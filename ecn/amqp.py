@@ -19,7 +19,7 @@ class AmqpProcessor:
         self.mobile_handler = None
 
     def connect(self, host: str, vhost: str, username: str, password: str):
-        self.logger.info('Connecting to RabbitMQ %s@%s:%s ...', username, host, vhost)
+        self.logger.info('***** Connecting to RabbitMQ %s@%s:%s ...', username, host, vhost)
         # https://stackoverflow.com/a/16155184/122441
         # https://pika.readthedocs.io/en/stable/examples/heartbeat_and_blocked_timeouts.html
         params = pika.ConnectionParameters(host=host, virtual_host=vhost,
@@ -35,7 +35,7 @@ class AmqpProcessor:
                 # Loop so we can communicate with RabbitMQ
                 self.conn.ioloop.start()
             except KeyboardInterrupt:
-                self.logger.info('Interrupted by keyboard, shutting down...')
+                self.logger.info('***** Interrupted by keyboard, shutting down...')
                 # Gracefully close the connection
                 self.conn.close()
                 # Loop until we're fully closed, will stop on its own
@@ -47,7 +47,7 @@ class AmqpProcessor:
             # Loop until we're fully closed, will stop on its own
             # self.conn.ioloop.start()
             # Reconnect if not KeyboardInterrupt
-            self.logger.info('Reconnecting...')
+            self.logger.info('***** Reconnecting...')
             time.sleep(1)
 
     def run(self):
@@ -55,7 +55,7 @@ class AmqpProcessor:
             # Loop so we can communicate with RabbitMQ
             self.conn.ioloop.start()
         except KeyboardInterrupt:
-            self.logger.info('Interrupted by keyboard, shutting down...')
+            self.logger.info('***** Interrupted by keyboard, shutting down...')
             # Gracefully close the connection
             self.conn.close()
             # Loop until we're fully closed, will stop on its own
@@ -92,7 +92,11 @@ class AmqpProcessor:
             self.logger.warning('Not consuming queue %s: no handler', self.QUEUE_MOBILE_STREAM)
 
     def on_channel_closed(self, channel: Channel, reason):
-        self.logger.warning('AMQP channel closed: %s', reason)
+        self.logger.warning('***** AMQP channel closed: %s', reason)
+        # Gracefully close the connection
+        # self.conn.close()
+        # Loop until we're fully closed, will stop on its own
+        self.conn.ioloop.start()
 
     def consume_stationary_v1(self, channel: Channel, method, header, body):
         """Called when we receive a message from RabbitMQ"""
