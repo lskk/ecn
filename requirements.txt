@@ -5,7 +5,7 @@ lazy-object-proxy==1.4.1
 mccabe==0.6.1
 numpy==1.17.0
 pika==1.1.0
-protobuf==3.9.0
+protobuf==3.18.3
 pylint==2.3.1
 pymongo==3.8.0
 python-dotenv==0.10.3
